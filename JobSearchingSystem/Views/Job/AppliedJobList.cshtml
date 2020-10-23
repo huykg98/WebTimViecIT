@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewBag.Title = "Tình trạng ứng tuyển";
+    Layout = "~/Views/Shared/_LayoutFinal.cshtml";
+}
+
+@model JobSearchingSystem.Models.AppliedJobViewModel
+
+
+
+<div class="page-content" style="padding: 20px 100px 20px 100px; background-color: #dedede; ">
+    <div class="col-lg-9 panel panel-default">
+        <h3 style="font-weight:600;text-align:center">Tình trạng ứng tuyển</h3>
+        <br />
+        <br />
+        <br />
+        <div class="table-container">
+
+            <table id="JSSTable" class="table table-hover table-striped table-bordered table-advanced tablesorter">
+                <thead>
+                    <tr>
+                        @*<th width="3%">
+                        <input id="square-checkbox-1" tabindex="9" type="checkbox" />
+                    </th>*@
+                        <th width="3%">No</th>
+                        <th width="14%">Công việc </th>
+                        <th width="12%">Công ty</th>
+                        <th width="7%">Ngày ứng tuyển</th>
+                        <th width="7%">Nhà tuyển dụng phản hồi</th>
+                        <th width="7%">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AppliedJobList != null)
+                    {
+                        int i = 1;
+                        foreach (var item in Model.AppliedJobList)
+                        {
+                           
+                            <tr>
+                                @*<td><input id="square-checkbox-1" tabindex="9" type="checkbox" /></td>*@
+                                <td>@i</td>
+                                <td><a href="/Job/Detail/?jobID=@item.JobID">@item.JobName</a></td>
+                                <td><a href="/Job/JobsOfRecruiter/?recruiterID=@item.RecruiterID" style="color: #428bca;">@item.CompanyName</a></td>
+                                <td>
+                                    @String.Format("{0:d}", item.AppliedDate)
+                                </td>
+                                <td>
+                                    @if (item.Status == 0)
+                                    {
+                                        <span class="label label-sm label-blue">Đang chờ duyệt</span>
+                                    }
+                                    else if (item.Status == 1)
+                                    {
+                                        <span class="label label-sm label-success">Được chấp nhận</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="label label-sm label-danger">Bị từ chối</span>
+                                    }
+                                </td>
+
+                                <td>
+
+                                  
+                                    @using (Html.BeginForm("DeleteAppliedRequest", "Job", FormMethod.Post, new { id = "DeleteForm" + item.JobID, style = "display: inline;" }))
+                                    {
+                                        <input type="hidden" name="JobID" value="@item.JobID" />
+                                        <input type="hidden" name="JobSeekerID" value="@item.JobSeekerID" />
+                                        <button type="button" data-id="DeleteForm@(item.JobID)" data-message="Bạn thật sự muốn xóa?" class="btn btn-red btn-sm confirmButton">
+                                            <i class="fa fa-trash-o" data-toggle="tooltip" title="Xóa"></i>&nbsp;
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table>
+        
+        </div>
+
+    </div>
+</div>

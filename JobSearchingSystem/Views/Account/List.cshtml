@@ -1,0 +1,270 @@
+﻿@model JobSearchingSystem.Models.AccListViewModel
+
+@{
+    ViewBag.Title = "Danh sách Account";
+    Layout = "~/Views/Shared/_LayoutFinal.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+
+        $.extend($.fn.dataTable.defaults, {
+            searching: true
+        });
+        var table = $('#myTable').DataTable({
+            lengthChange: false,
+            "language": {
+                "lengthMenu": "Hiển thị _MENU_ yêu cầu mỗi trang",
+                "zeroRecords": "Không tìm thấy dữ liệu phù hợp",
+                "info": "Hiển thị trang _PAGE_ trên tổng số _PAGES_ trang",
+                "infoEmpty": "Không tìm thấy dữ liệu phù hợp",
+                "infoFiltered": "(tìm kiếm từ _MAX_ yêu cầu)",
+                "oPaginate": {
+                    "sNext": "Trang sau",
+                    "sPrevious": "Trang trước"
+                }
+            }
+
+        });
+
+        $("#CreateBtn").click(function () {
+            $("#CreateForm").modal("show");
+        });
+
+        $('.showoption').val($('#beginshowoption').val());
+
+        $('#selShowoption').change(function () {
+            $('.showoption').val($('#selShowoption').val());
+        });
+    });
+
+</script>
+
+<input type="hidden" id="beginshowoption" value="@Model.showoption" />
+
+<div id="CreateForm" tabindex="-1" role="dialog" aria-labelledby="modal-stackable-label" aria-hidden="true" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" aria-hidden="true" class="close">&times;</button>
+                <h4 id="modal-stackable-label" class="modal-title">Tạo account mới</h4>
+            </div>
+                @using (Html.BeginForm("CreateAccount", "Account", FormMethod.Post))
+                {
+                    <div class="modal-body">
+                        <input type="hidden" name="showoption" class="showoption" />
+                        <div class="form-group">
+                            <label>Username</label>
+                            <div class="input-icon right"><i class="fa fa-user"></i><input type="text" data-val="true" data-val-required="Ô Username trống." data-val-length="Ô Username không được quá 20 kí tự." data-val-length-max="20" placeholder="Username" name="UserName" class="form-control" value=""></div>
+                            <span class="field-validation-valid ErrorMessage" data-valmsg-for="UserName" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu</label>
+                            <div class="input-icon right"><i class="fa fa-key"></i><input type="password" data-val="true" data-val-length="Mật khẩu phải có ít nhất 6 kí tự." data-val-length-max="100" data-val-length-min="6" data-val-required="Mật khẩu không được trống." placeholder="Mật khẩu" name="Password" class="form-control" value=""></div>
+                            <span class="field-validation-valid ErrorMessage" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu xác nhận</label>
+                            <div class="input-icon right"><i class="fa fa-key"></i><input type="password" data-val="true" data-val-equalto="'Mật khẩu xác nhận' và 'Mật khẩu' không trùng khớp." data-val-equalto-other="*.Password" placeholder="Mật khẩu xác nhận" name="ConfirmPassword" class="form-control" value=""></div>
+                            <span class="field-validation-valid ErrorMessage" data-valmsg-for="ConfirmPassword" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Tên Role</label>
+                            <select id="selRoleName" class="form-control" name="RoleName">
+                                <option value="Staff">Staff</option>
+                                <option value="Manager">Manager</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">
+                            Tạo mới
+                            &nbsp;<i class="fa fa-chevron-circle-right"></i>
+                        </button>
+                        <button type="button" data-dismiss="modal" class="btn btn-default">Trở lại</button>
+                    </div>
+                }
+        </div>
+    </div>
+</div>
+
+
+
+<div class="page-content" style="padding: 20px 100px 20px 100px; background-color: #dedede; ">
+    <div class="col-lg-9 panel panel-default" style="">
+        <h3 style="font-weight:600;text-align:center">Danh sách Account</h3>
+        @if (String.IsNullOrEmpty(Model.showoption) || "0".Equals(Model.showoption))
+        {
+            <button id="CreateBtn" type="button" class="btn btn-grey btn-sm" style="display:inline">
+                <i class="fa fa-pencil"></i>&nbsp;
+                Tạo mới
+            </button>
+        }
+        &nbsp;
+        <label style="display:inline">Chế độ hiển thị:</label>&nbsp;
+        @using (Html.BeginForm("List", "Account", FormMethod.Post, new { Style = "display:inline" }))
+        {
+            if (String.IsNullOrEmpty(Model.showoption))
+            {
+                <select id="selShowoption" style="display:inline; width:25%" class="form-control" name="showoption" onchange="this.form.submit()">
+                    <option value="" selected>Tất cả</option>
+                    <option value="0">Nhóm quản lý</option>
+                    <option value="1">Nhóm người dùng</option>
+                    <option value="2">Nhóm nhà tuyển dụng</option>
+                    <option value="3">Nhóm người tìm việc</option>
+                    <option value="4">Nhóm nhà tuyển dụng chờ active</option>
+
+                </select>
+            }
+            else if ("0".Equals(Model.showoption))
+            {
+                <select id="selShowoption" style="display:inline; width:25%" class="form-control" name="showoption" onchange="this.form.submit()">
+                    <option value="">Tất cả</option>
+                    <option value="0" selected>Nhóm quản lý</option>
+                    <option value="1">Nhóm người dùng</option>
+                    <option value="2">Nhóm nhà tuyển dụng</option>
+                    <option value="3">Nhóm người tìm việc</option>
+                    <option value="4">Nhóm nhà tuyển dụng chờ active</option>
+                </select>
+            }
+            else if ("1".Equals(Model.showoption))
+            {
+                <select id="selShowoption" style="display:inline; width:25%" class="form-control" name="showoption" onchange="this.form.submit()">
+                    <option value="">Tất cả</option>
+                    <option value="0">Nhóm quản lý</option>
+                    <option value="1" selected>Nhóm người dùng</option>
+                    <option value="2">Nhóm nhà tuyển dụng</option>
+                    <option value="3">Nhóm người tìm việc</option>
+                    <option value="4">Nhóm nhà tuyển dụng chờ active</option>
+                </select>
+            }
+            else if ("2".Equals(Model.showoption))
+            {
+                <select id="selShowoption" style="display:inline; width:25%" class="form-control" name="showoption" onchange="this.form.submit()">
+                    <option value="">Tất cả</option>
+                    <option value="0" >Nhóm quản lý</option>
+                    <option value="1">Nhóm người dùng</option>
+                    <option value="2" selected>Nhóm nhà tuyển dụng</option>
+                    <option value="3">Nhóm người tìm việc</option>
+                    <option value="4">Nhóm nhà tuyển dụng chờ active</option>
+                </select>
+            }
+            else if ("3".Equals(Model.showoption))
+            {
+                <select id="selShowoption" style="display:inline; width:25%" class="form-control" name="showoption" onchange="this.form.submit()">
+                    <option value="">Tất cả</option>
+                    <option value="0" >Nhóm quản lý</option>
+                    <option value="1">Nhóm người dùng</option>
+                    <option value="2">Nhóm nhà tuyển dụng</option>
+                    <option value="3" selected>Nhóm người tìm việc</option>
+                    <option value="4">Nhóm nhà tuyển dụng chờ active</option>
+                </select>
+            }
+
+            else
+            {
+                <select id="selShowoption" style="display:inline; width:25%" class="form-control" name="showoption" onchange="this.form.submit()">
+                    <option value="">Tất cả</option>
+                    <option value="0">Nhóm quản lí</option>
+                    <option value="1">Nhóm người dùng</option>
+                    <option value="2">Nhóm nhà tuyển dụng</option>
+                    <option value="3">Nhóm người tìm việc</option>
+                    <option value="4" selected>Nhóm nhà tuyển dụng chờ active</option>
+                </select>
+            }
+        }
+        <br />
+        <br />
+
+        <div class="table-container">
+            <table id="myTable" class="table table-hover table-striped table-bordered table-advanced tablesorter">
+                <thead>
+                    <tr>
+                        <th width="10%">No</th>
+                        <th width="30%">Username </th>
+                        <th width="10%">Loại</th>
+                        <th width="10%">Tình trạng</th>
+                        <th width="10%">Hành động</th>
+                        <th width="30%">Ghi chú</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int i = 1;}
+                    @if (Model.userList != null)
+                    {
+                        foreach (var item in Model.userList)
+                        {
+                            <tr>
+                                <td>@(i++)</td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UserName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.RoleName)
+                                </td>
+                                <td>
+                                    @if (item.IsActive == true)
+                                    {
+                                        <label>Active</label>
+                                    }
+                                    else
+                                    {
+                                        <label>Inactive</label>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.RoleName != "Admin")
+                                    {
+                                        if (item.IsActive == true)
+                                        {
+                                            using (Html.BeginForm("DeactiveAccount", "Account", FormMethod.Post, new { id = "DeactiveForm" + item.UserName, style = "display: inline;" }))
+                                            {
+                                                <input type="hidden" name="showoption" class="showoption" />
+                                                <input type="hidden" name="UserName" value="@item.UserName" />
+                                                <button type="button" data-id="DeactiveForm@(item.UserName)" data-message="Bạn thật sự muốn vô hiệu hóa?" class="btn btn-red btn-sm confirmButton">
+                                                    <i class="fa fa-times" data-toggle="tooltip" title="Vô hiệu hóa"></i>&nbsp;
+                                                </button>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            using (Html.BeginForm("ActiveAccount", "Account", FormMethod.Post, new { id = "ActiveForm" + item.UserName, style = "display: inline;" }))
+                                            {
+                                                <input type="hidden" name="showoption" class="showoption" />
+                                                <input type="hidden" name="UserName" value="@item.UserName" />
+
+                                                <button type="button" data-id="ActiveForm@(item.UserName)" data-message="Bạn thật sự muốn hoạt hóa?" class="btn btn-primary btn-sm confirmButton">
+                                                    <i class="fa fa-refresh" data-toggle="tooltip" title="Hoạt hóa"></i>&nbsp;
+                                                </button>
+                                            }
+
+                                        }
+
+                                    }
+                                </td>
+                                <td>
+
+
+                                    @using (Html.BeginForm("AddNoteAccount", "Account", FormMethod.Post, new { id = "AddNoteForm" + item.UserName,note = item.note, style = "display: inline;" }))
+                                    {
+                                        <input type="hidden" name="showoption" class="showoption" />
+                                        <input type="hidden" name="UserName" value="@item.UserName" />
+                                        <input type="text" name="Note" value="@item.note" />
+
+                                        <button type="button" data-id="AddNoteForm@(item.UserName)" data-message="Bạn thật sự muốn lưu?" class="btn btn-primary btn-sm confirmButton">
+                                            <i class="fa fa-save" data-toggle="tooltip" title="Lưu"></i>&nbsp;
+                                        </button>
+                                    }
+
+
+
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
